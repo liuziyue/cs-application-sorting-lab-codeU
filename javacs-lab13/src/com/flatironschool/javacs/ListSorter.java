@@ -64,7 +64,48 @@ public class ListSorter<T> {
 	 */
 	public List<T> mergeSort(List<T> list, Comparator<T> comparator) {
         // FILL THIS IN!
-        return null;
+        List<T> sorted = new ArrayList<>(list);
+        mergeSortHelper(0, list.size() - 1, list, sorted, comparator);
+        // System.out.println(sorted);
+        return sorted;
+	}
+
+	private void mergeSortHelper(int start, int end, List<T> list, List<T> sorted, Comparator<T> comparator) {
+		if (start < end) {
+			int mid = (start + end) / 2;
+			mergeSortHelper(start, mid, list, sorted, comparator);
+			mergeSortHelper(mid + 1, end, list, sorted, comparator);
+			merge(list, sorted, start, mid + 1, end, comparator);
+		}
+	}
+
+	private void merge(List<T> list, List<T> sorted, int leftStart, int rightStart, int end, Comparator<T> comparator) {
+		int k = leftStart;
+		int leftEnd = rightStart - 1;
+		while (leftStart <= leftEnd && rightStart <= end) {
+			if (comparator.compare(list.get(leftStart), list.get(rightStart)) <= 0) {
+				sorted.set(k, list.get(leftStart));
+				leftStart++;
+
+			} else {
+				sorted.set(k, list.get(rightStart));
+				rightStart++;
+			}
+			k++;
+		}
+		while (leftStart <= leftEnd) {
+			sorted.set(k, list.get(leftStart));
+			k++;
+			leftStart++;
+		}
+		while (rightStart <= end) {
+			sorted.set(k, list.get(rightStart));
+			k++;
+			rightStart++;
+		}
+		for (int i = 0; i < list.size(); i++) {
+			list.set(i, sorted.get(i));
+		}
 	}
 
 	/**
@@ -76,6 +117,15 @@ public class ListSorter<T> {
 	 */
 	public void heapSort(List<T> list, Comparator<T> comparator) {
         // FILL THIS IN!
+        PriorityQueue<T> queue = new PriorityQueue<T>(list.size(), comparator);
+        for (int i = 0; i < list.size(); i++) {
+        	queue.offer(list.get(i));
+        }
+        int i = 0;
+        while (!queue.isEmpty()) {
+        	list.set(i, queue.poll());
+        	i++;
+        }
 	}
 
 	
@@ -90,7 +140,23 @@ public class ListSorter<T> {
 	 */
 	public List<T> topK(int k, List<T> list, Comparator<T> comparator) {
         // FILL THIS IN!
-        return null;
+        PriorityQueue<T> queue = new PriorityQueue<T>(k, comparator);
+       	List<T> topK = new ArrayList<T>();
+        for (int i = 0; i < list.size(); i++) {
+        	if (queue.size() >= k) {
+        		if (comparator.compare(list.get(i), queue.peek()) >= 0) {
+        			queue.poll();
+        			queue.offer(list.get(i));
+        		}
+        	} else {
+        		queue.offer(list.get(i));
+        	}
+        }
+        while (!queue.isEmpty()) {
+        	topK.add(queue.poll());
+        }
+
+        return topK;
 	}
 
 	
